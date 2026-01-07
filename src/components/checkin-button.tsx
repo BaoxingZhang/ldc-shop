@@ -6,8 +6,10 @@ import { checkIn, getUserPoints, getCheckinStatus } from "@/actions/points"
 import { toast } from "sonner"
 import { Gift, Coins } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/lib/i18n/context"
 
 export function CheckInButton() {
+    const { t } = useI18n()
     const [points, setPoints] = useState(0)
     const [checkedIn, setCheckedIn] = useState(false)
     const [loading, setLoading] = useState(true)
@@ -67,7 +69,7 @@ export function CheckInButton() {
                     disabled={checkingIn}
                 >
                     <Gift className={cn("w-4 h-4", checkingIn && "animate-pulse")} />
-                    Check In
+                    {t('checkin.button')}
                 </Button>
             )}
         </div>

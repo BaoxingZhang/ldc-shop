@@ -334,5 +334,12 @@
         "submitError": "Failed to submit review. Please try again.",
         "invalidRating": "Please select a rating.",
         "leaveReview": "Leave a Review"
+    },
+    "checkin": {
+        "button": "Check In",
+        "success": "Check-in successful! +{{points}} points",
+        "alreadyCheckedIn": "Already checked in today",
+        "failed": "Check-in failed",
+        "networkError": "Network error"
     }
 }
