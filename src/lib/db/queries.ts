@@ -367,6 +367,7 @@ async function ensureLoginUsersTable() {
         CREATE TABLE IF NOT EXISTS login_users (
             user_id TEXT PRIMARY KEY,
             username TEXT,
+            points INTEGER DEFAULT 0 NOT NULL,
             created_at TIMESTAMP DEFAULT NOW(),
             last_login_at TIMESTAMP DEFAULT NOW()
         )
@@ -452,21 +453,26 @@ export async function recordLoginUser(userId: string, username?: string | null) 
             set: { username: username || null, lastLoginAt: new Date() }
         });
     } catch (error: any) {
-        if (!isMissingTable(error)) {
-            console.error('recordLoginUser error:', error);
+        if (isMissingTable(error) || error?.code === '42703' || error?.message?.includes('column')) {
+            await ensureLoginUsersTable();
+            // Ensure points column exists for existing tables
+            try {
+                await db.execute(sql`ALTER TABLE login_users ADD COLUMN IF NOT EXISTS points INTEGER DEFAULT 0 NOT NULL;`);
+            } catch {
+                // Ignore if it fails (e.g. column exists)
+            }
+
+            await db.insert(loginUsers).values({
+                userId,
+                username: username || null,
+                lastLoginAt: new Date()
+            }).onConflictDoUpdate({
+                target: loginUsers.userId,
+                set: { username: username || null, lastLoginAt: new Date() }
+            });
             return;
         }
-
-        await ensureLoginUsersTable();
-
-        await db.insert(loginUsers).values({
-            userId,
-            username: username || null,
-            lastLoginAt: new Date()
-        }).onConflictDoUpdate({
-            target: loginUsers.userId,
-            set: { username: username || null, lastLoginAt: new Date() }
-        });
+        console.error('recordLoginUser error:', error);
     }
 }
 
