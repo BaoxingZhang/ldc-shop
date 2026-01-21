@@ -45,7 +45,7 @@ export async function SiteHeader() {
     }
 
     return (
-        <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-40 w-full border-b-4 border-border bg-background">
             <div className="container flex h-16 items-center gap-3">
                 <div className="flex items-center gap-4 md:gap-8 min-w-0">
                     <HeaderLogo adminName={firstAdminName} shopNameOverride={shopNameOverride} />
@@ -61,14 +61,14 @@ export async function SiteHeader() {
                         {user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                                        <Avatar className="h-8 w-8">
+                                    <Button variant="ghost" className="relative h-10 w-10 border-4 border-border bg-secondary hover:bg-primary">
+                                        <Avatar className="h-8 w-8 border-2 border-border">
                                             <AvatarImage src={user.avatar_url || ''} alt={user.name || ''} />
                                             <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
                                         </Avatar>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                <DropdownMenuContent className="w-56 border-4 border-border bg-card neo-shadow-sm" align="end" forceMount>
                                     <DropdownMenuLabel className="font-normal">
                                         <div className="flex flex-col space-y-1">
                                             <p className="text-sm font-medium leading-none">{user.name}</p>
