@@ -12,16 +12,16 @@ import {
 import { User } from "lucide-react"
 import { SignInButton } from "@/components/signin-button"
 import { SignOutButton } from "@/components/signout-button"
-import { HeaderLogo, HeaderNav, HeaderSearch, HeaderUserMenuItems, HeaderUnreadBadge, LanguageSwitcher } from "@/components/header-client-parts"
+import { HeaderLogo, HeaderNav, HeaderSearch, HeaderUserMenuItems, LanguageSwitcher } from "@/components/header-client-parts"
 import { ModeToggle } from "@/components/mode-toggle"
-import { getSetting, recordLoginUser, setSetting, getUserUnreadNotificationCount } from "@/lib/db/queries"
+import { getSetting, recordLoginUser } from "@/lib/db/queries"
 import { CheckInButton } from "@/components/checkin-button"
 
 export async function SiteHeader() {
     const session = await auth()
     const user = session?.user
     if (user?.id) {
-        await recordLoginUser(user.id, user.username || user.name || null, user.email || null)
+        await recordLoginUser(user.id, user.username || user.name || null)
     }
 
     // Check if admin (case-insensitive)
@@ -30,26 +30,10 @@ export async function SiteHeader() {
     const isAdmin = user?.username && adminUsers.includes(user.username.toLowerCase()) || false
     const firstAdminName = rawAdminUsers[0]?.trim() // Get first admin name for branding
     let shopNameOverride: string | null = null
-    let shopLogoOverride: string | null = null
     try {
-        const [name, logo] = await Promise.all([
-            getSetting('shop_name'),
-            getSetting('shop_logo')
-        ])
-        shopNameOverride = name
-        shopLogoOverride = logo
+        shopNameOverride = await getSetting('shop_name')
     } catch {
         shopNameOverride = null
-        shopLogoOverride = null
-    }
-    if (isAdmin && user?.avatar_url && (!shopLogoOverride || !shopLogoOverride.trim())) {
-        try {
-            await setSetting('shop_logo', user.avatar_url)
-            await setSetting('shop_logo_updated_at', String(Date.now()))
-            shopLogoOverride = user.avatar_url
-        } catch {
-            // best effort
-        }
     }
 
     let checkinEnabled = true
@@ -60,51 +44,37 @@ export async function SiteHeader() {
         checkinEnabled = true
     }
 
-    let unreadCount = 0
-    if (user?.id) {
-        try {
-            unreadCount = await getUserUnreadNotificationCount(user.id)
-        } catch {
-            unreadCount = 0
-        }
-    }
-
     return (
-        <header className="sticky top-0 z-40 w-full border-b border-border/20 bg-gradient-to-b from-background/90 via-background/70 to-background/55 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
-            <div className="container flex h-16 items-center gap-2 md:gap-3">
+        <header className="sticky top-0 z-40 w-full border-b-4 border-border bg-background">
+            <div className="container flex h-16 items-center gap-3">
                 <div className="flex items-center gap-4 md:gap-8 min-w-0">
-                    <HeaderLogo adminName={firstAdminName} shopNameOverride={shopNameOverride} shopLogoOverride={shopLogoOverride} />
-                    <HeaderNav isAdmin={isAdmin} isLoggedIn={!!user} />
+                    <HeaderLogo adminName={firstAdminName} shopNameOverride={shopNameOverride} />
+                    <HeaderNav isAdmin={isAdmin} />
                 </div>
                 <div className="hidden md:flex flex-1 justify-center px-4">
                     {/* HeaderSearch removed as per user request */}
                 </div>
-                <div className="ml-auto flex items-center justify-end gap-2 md:gap-3">
-                    <nav className="flex items-center space-x-1 rounded-full border border-border/20 bg-muted/20 px-1.5 py-1 md:px-2">
+                <div className="flex items-center justify-end gap-2 md:gap-3">
+                    <nav className="flex items-center space-x-2">
+                        {user && <CheckInButton enabled={checkinEnabled} />}
                         <LanguageSwitcher />
-                        <ModeToggle />
                         {user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="relative h-8 w-8 overflow-visible rounded-full bg-background/70 hover:bg-background/90 transition-transform duration-200 hover:-translate-y-0.5">
-                                        <HeaderUnreadBadge initialCount={unreadCount} className="absolute -top-1 -right-1 z-10 pointer-events-none shadow-sm" />
-                                        <Avatar className="relative z-0 h-8 w-8">
+                                    <Button variant="ghost" className="relative h-10 w-10 border-4 border-border bg-secondary hover:bg-primary">
+                                        <Avatar className="h-8 w-8 border-2 border-border">
                                             <AvatarImage src={user.avatar_url || ''} alt={user.name || ''} />
                                             <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
                                         </Avatar>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                <DropdownMenuContent className="w-56 border-4 border-border bg-card neo-shadow-sm" align="end" forceMount>
                                     <DropdownMenuLabel className="font-normal">
                                         <div className="flex flex-col space-y-1">
                                             <p className="text-sm font-medium leading-none">{user.name}</p>
                                             <p className="text-xs leading-none text-muted-foreground">ID: {user.id}</p>
                                         </div>
                                     </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <div className="px-2 py-1">
-                                        <CheckInButton enabled={checkinEnabled} />
-                                    </div>
                                     <DropdownMenuSeparator />
                                     <HeaderUserMenuItems isAdmin={isAdmin} />
                                     <DropdownMenuSeparator />
@@ -114,6 +84,7 @@ export async function SiteHeader() {
                         ) : (
                             <SignInButton />
                         )}
+                        <ModeToggle />
                     </nav>
                 </div>
             </div>
