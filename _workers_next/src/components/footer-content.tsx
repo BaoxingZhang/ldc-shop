@@ -40,7 +40,7 @@ export function FooterContent({ customFooter, version }: FooterContentProps) {
                         href={url}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-muted-foreground/80 hover:text-primary transition-colors duration-300"
+                        className="text-secondary font-bold hover:text-primary transition-colors duration-100"
                     >
                         {url}
                     </a>
@@ -69,16 +69,23 @@ export function FooterContent({ customFooter, version }: FooterContentProps) {
     }
 
     return (
-        <footer className="border-t border-border/50 py-6 pb-20 md:py-0 md:pb-0 bg-gradient-to-t from-muted/30 to-transparent">
-            <div className="container flex flex-col items-center justify-between gap-4 md:h-20 md:flex-row">
-                <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
-                    <p className="text-center text-xs leading-loose text-muted-foreground/80 md:text-left">
+        <footer className="bg-black text-white border-t-4 border-black mt-16">
+            <div className="container py-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="font-bold text-center sm:text-left">
                         {renderFooterText(footerText)}
                     </p>
+                    <div className="flex items-center gap-4">
+                        <a
+                            href="https://github.com/chatgptuk/ldc-shop"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-4 py-2 font-bold uppercase text-sm bg-secondary text-black border-4 border-white shadow-[4px_4px_0px_0px_#fff] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-100"
+                        >
+                            v{version}
+                        </a>
+                    </div>
                 </div>
-                <a href="https://github.com/chatgptuk/ldc-shop" target="_blank" rel="noreferrer" className="text-center text-xs text-muted-foreground/40 hover:text-primary transition-colors duration-300">
-                    v{version}
-                </a>
             </div>
         </footer>
     )

@@ -70,8 +70,8 @@ export async function SiteHeader() {
     }
 
     return (
-        <header className="sticky top-0 z-40 w-full border-b border-border/20 bg-gradient-to-b from-background/90 via-background/70 to-background/55 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
-            <div className="container flex h-16 items-center gap-2 md:gap-3">
+        <header className="sticky top-0 z-40 w-full border-b-4 border-black dark:border-white bg-background">
+            <div className="container flex h-16 items-center gap-2 md:gap-4">
                 <div className="flex items-center gap-4 md:gap-8 min-w-0">
                     <HeaderLogo adminName={firstAdminName} shopNameOverride={shopNameOverride} shopLogoOverride={shopLogoOverride} />
                     <HeaderNav isAdmin={isAdmin} isLoggedIn={!!user} />
@@ -80,34 +80,34 @@ export async function SiteHeader() {
                     {/* HeaderSearch removed as per user request */}
                 </div>
                 <div className="ml-auto flex items-center justify-end gap-2 md:gap-3">
-                    <nav className="flex items-center space-x-1 rounded-full border border-border/20 bg-muted/20 px-1.5 py-1 md:px-2">
+                    <nav className="flex items-center gap-2">
                         <LanguageSwitcher />
                         <ModeToggle />
                         {user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="relative h-8 w-8 overflow-visible rounded-full bg-background/70 hover:bg-background/90 transition-transform duration-200 hover:-translate-y-0.5">
-                                        <HeaderUnreadBadge initialCount={unreadCount} className="absolute -top-1 -right-1 z-10 pointer-events-none shadow-sm" />
-                                        <Avatar className="relative z-0 h-8 w-8">
+                                    <Button variant="outline" className="relative h-12 w-12 overflow-visible p-0">
+                                        <HeaderUnreadBadge initialCount={unreadCount} className="absolute -top-2 -right-2 z-10 pointer-events-none" />
+                                        <Avatar className="relative z-0 h-10 w-10 border-2 border-black dark:border-white">
                                             <AvatarImage src={user.avatar_url || ''} alt={user.name || ''} />
-                                            <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+                                            <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
                                         </Avatar>
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56" align="end" forceMount>
-                                    <DropdownMenuLabel className="font-normal">
+                                <DropdownMenuContent className="w-56 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#FFFDF5]" align="end" forceMount>
+                                    <DropdownMenuLabel className="font-bold">
                                         <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-medium leading-none">{user.name}</p>
-                                            <p className="text-xs leading-none text-muted-foreground">ID: {user.id}</p>
+                                            <p className="text-sm font-black leading-none uppercase">{user.name}</p>
+                                            <p className="text-xs leading-none text-foreground/60 font-bold">ID: {user.id}</p>
                                         </div>
                                     </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator className="bg-black dark:bg-white h-0.5" />
                                     <div className="px-2 py-1">
                                         <CheckInButton enabled={checkinEnabled} />
                                     </div>
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator className="bg-black dark:bg-white h-0.5" />
                                     <HeaderUserMenuItems isAdmin={isAdmin} />
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator className="bg-black dark:bg-white h-0.5" />
                                     <SignOutButton />
                                 </DropdownMenuContent>
                             </DropdownMenu>
