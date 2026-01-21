@@ -15,6 +15,7 @@ import { SignOutButton } from "@/components/signout-button"
 import { HeaderLogo, HeaderNav, HeaderSearch, HeaderUserMenuItems, HeaderUnreadBadge, LanguageSwitcher } from "@/components/header-client-parts"
 import { ModeToggle } from "@/components/mode-toggle"
 import { getSetting, recordLoginUser, setSetting, getUserUnreadNotificationCount } from "@/lib/db/queries"
+import { isRegistryEnabled } from "@/lib/registry"
 import { CheckInButton } from "@/components/checkin-button"
 
 export async function SiteHeader() {
@@ -59,6 +60,25 @@ export async function SiteHeader() {
     } catch {
         checkinEnabled = true
     }
+
+    // Registry feature from upstream v1.1.3
+    const registryEnabled = isRegistryEnabled()
+    let registryOptIn = false
+    let registryHideNav = false
+    if (registryEnabled) {
+        try {
+            const [optIn, hideNav] = await Promise.all([
+                getSetting('registry_opt_in'),
+                getSetting('registry_hide_nav')
+            ])
+            registryOptIn = optIn === 'true'
+            registryHideNav = hideNav === 'true'
+        } catch {
+            registryOptIn = false
+            registryHideNav = false
+        }
+    }
+    const showNavigator = registryEnabled && (registryOptIn || !registryHideNav)
 
     let unreadCount = 0
     if (user?.id) {
@@ -106,7 +126,7 @@ export async function SiteHeader() {
                                         <CheckInButton enabled={checkinEnabled} />
                                     </div>
                                     <DropdownMenuSeparator className="bg-black dark:bg-white h-0.5" />
-                                    <HeaderUserMenuItems isAdmin={isAdmin} />
+                                    <HeaderUserMenuItems isAdmin={isAdmin} showNav={showNavigator} />
                                     <DropdownMenuSeparator className="bg-black dark:bg-white h-0.5" />
                                     <SignOutButton />
                                 </DropdownMenuContent>

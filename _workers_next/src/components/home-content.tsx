@@ -239,7 +239,7 @@ export async function HomeContent({ products, announcement, visitorCount, catego
                         )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
                         {products.map((product, index) => (
                             <Card
                                 key={product.id}
@@ -291,12 +291,18 @@ export async function HomeContent({ products, announcement, visitorCount, catego
                                     </p>
                                 </CardContent>
 
-                                {/* Footer Section */}
+                                {/* Footer Section - Neo Brutalism style with upstream structure */}
                                 <CardFooter className="flex items-center justify-between gap-3">
                                     <div className="flex flex-col">
-                                        <span className="font-black text-2xl">
-                                            <span className="text-primary">¥</span>{Number(product.price)}
-                                        </span>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="font-black text-2xl text-primary">{Number(product.price)}</span>
+                                            <span className="text-xs font-bold uppercase">{t('common.credits')}</span>
+                                            {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (
+                                                <span className="text-xs text-foreground/50 line-through">
+                                                    {Number(product.compareAtPrice)}
+                                                </span>
+                                            )}
+                                        </div>
                                         <div className="flex items-center gap-2 text-xs font-bold text-foreground/60">
                                             <span>{t('admin.products.stock')}: {product.stockCount >= 999999 ? '∞' : product.stockCount}</span>
                                             <span>|</span>
